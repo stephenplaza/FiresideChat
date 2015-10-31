@@ -32,7 +32,6 @@ This chat application orders messages by timestamp.  If there are a lot of messa
 
 ## TODO
 
-* Add pagination to show older messages
 * Allow moderator login to delete certain posts
 * Add a moderator mode to accept/reject posts.
 * Allow component to take a Firebase token for login to allow server side control of user access and moderation.

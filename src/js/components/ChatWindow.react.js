@@ -2,16 +2,20 @@
 
 var React = require('react');
 
+var PageLimit = 100;
+var InitialLimit = 10;
+
 var ChatWindow = React.createClass({
     getInitialState: function () {
         return {
-            messages: []
+            messages: [],
+            loadedAll: false
         }
     },
     componentWillMount: function () {
         // get initial messages (only grab last few)
         // watch for changes
-        this.props.firebase.orderByChild("timestamp").limitToLast(10).on("child_added", this.updateMsgs);
+        this.props.firebase.orderByChild("timestamp").limitToLast(InitialLimit).on("child_added", this.updateMsgs);
     },
     submitMsg: function () {
         // grab text and submit with username -- do not explicitly extend messages?
@@ -33,11 +37,37 @@ var ChatWindow = React.createClass({
         tmessages.push(newdata);
         this.setState({messages:tmessages});
     },
+    showMore: function () {
+        // show in increments of PageLimit
+        var query = this.props.firebase.orderByChild("timestamp").endAt(this.state.messages[0].timestamp).limitToLast(PageLimit);
+
+        // query older data and prepend to the currently loaded data
+        query.once("value", function (datasnapshot) {
+            if (datasnapshot.numChildren() < PageLimit) {
+                this.setState({loadedAll: true});
+            }
+
+            var tempslice = [];
+            var count = 1;
+            var maxcount = datasnapshot.numChildren(); 
+            // do not readd the last one
+            datasnapshot.forEach(function(data) {
+                if (count != maxcount) {
+                    tempslice.push(data.val());
+                }
+                count += 1;
+            });
+
+            var newslice= tempslice.concat(this.state.messages);
+            this.setState({messages:newslice});
+
+        }.bind(this));
+    },
     render: function () {
         // render submission box with button
         var msgbox = (
                     <div className="form">
-                        <input type="text" className="form-control" id="message" />
+                        <input type="text" maxLength="256" className="form-control" id="message" />
     
                         <button style={{marginTop: "1em"}} type="button" className="btn btn-primary" onClick={this.submitMsg}>Submit Message</button>
                     </div>
@@ -45,6 +75,16 @@ var ChatWindow = React.createClass({
         // render text with messages (alternate colors)
         var messages = this.state.messages.slice().reverse();
         var count = 0;
+        
+        // support pagination
+        var pagination = <tr />;
+
+        if (!this.state.loadedAll) {
+            pagination = (
+                            <center><a onClick={this.showMore}>Show More</a></center>
+                    )
+        }
+        
         return (
             <div>
                 <pre className="pre-scrollable" style={{overflow:scroll, height: "300"}}>
@@ -68,6 +108,7 @@ var ChatWindow = React.createClass({
                     );
                 })}
                 </table>
+                {pagination}
                 </pre>
                 {msgbox}
             </div>
