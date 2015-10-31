@@ -10,11 +10,16 @@ var Master = require('./components/ChatWidget.react');
  * Renders component just to a DIV with DVIDServiceWidget.
 */
 function loadInterface() {
-    var fireaddr,
+    var fireaddr, ismoderator,
         element = document.getElementById("firesidechat");
 
     fireaddr = element.getAttribute("data-fireaddr");
-    React.render(<Master fireaddr={fireaddr}  />, element);
+    var moderator = element.getAttribute("data-moderatormode");
+    ismoderator = false;
+    if (moderator == "true") {
+        ismoderator = true;
+    }
+    React.render(<Master fireaddr={fireaddr} ismoderator={ismoderator} />, element);
 }
 
 // do not render component until

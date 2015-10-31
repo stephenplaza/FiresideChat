@@ -27,14 +27,14 @@ var ChatWidget = React.createClass({
              return (
                 <div className="container-fluid"> 
                     <Login callback={this.userCallback} />
-                    <ChatWindow firebase={this.state.chatRef} userName={this.state.userName} />
+                    <ChatWindow firebase={this.state.chatRef} userName={this.state.userName} ismoderator={this.props.ismoderator} />
                 </div>
             );
         } else {
             // ?! add blank for chat window
             return (    
                 <div className="container-fluid"> 
-                    <Login callback={this.userCallback} firebase={this.state.chatRef} />
+                    <Login callback={this.userCallback} firebase={this.state.chatRef} ismoderator={this.props.ismoderator} />
                 </div>
             )
         }
