@@ -33,7 +33,19 @@ This chat application orders messages by timestamp.  If there are a lot of messa
 
 To enable moderation mode, set "data-moderationmode" to "true".  Currently, moderation mode requires that a email/password has been setup on Firebase for the given reference location.  The moderator mode lets the user delete certain posts.  TBD: allow messages to pass to the moderator before being public.
 
-Permissions should be setup on Firebase that allows only the moderator user to delete children for the given chat location.
+## A Note on Authentication and Permissions
+
+This package currently assumes anonymous read/writes are possible at the given database location provided to the package.  It is assumed that the moderator is the only one with priveleges to delete entries.  While not necessary for this application to work, this behavior can be enforced by setting rules in one's Firebase account.  For instance, the following rule prevents the deletion of an existing item unless the authenticated user has the uid of SOMEUID:
+
+    ".write": "(!data.exists() && newData.exists()) || (auth.uid == 'SOMEUID')"
+
+More elegant rules can be written that work over custom user groups created in a firebase database location.
+
+It is also possible to ensure that only items with a certain format can be added.  The following validation rule admits the messages added by this application.
+
+    ".validate": "newData.hasChildren(['text', 'timestamp', 'username'])"
+    
+For now, authentication is anonymous or uses a Firebase email/password for the moderator mode.  TBD: allow other forms of authentication for moderators (like google or twitter) and allow tokens to be passed for both moderator and non-moderator mode to allow server-side authentication and more restrictive access to non-moderators while not allowing public read/write.
 
 ## TODO
 
