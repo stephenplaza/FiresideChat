@@ -12,7 +12,7 @@ Main TODO: Moderation mode that requires messages to be approved by a trusted mo
 
 ## Quick Start Guide
 
-This package contains a 'dist' directory which contains the chat widget in index.html (see release zip file).  Before launching this page, your Firebase account address must be specified in place of YOURADDR (signup for Firebase is free).  The moderator mode can be toggled by setting data-moderatormode to "true" or "false".  To use the moderator mode, an email/password must be registered for the given Firebase account.
+This package contains a 'dist' directory which contains the chat widget in index.html (see release zip file).  Before opening this page in a web browser, the index.html file should be modified.  The Firebase account address must be specified in place of YOURADDR (signup for Firebase is free).  The moderator mode can be toggled by setting data-moderatormode to "true" or "false".  To use the moderator mode, an email/password must be registered for the given Firebase account.
 
 ## Installation and Usage
 
