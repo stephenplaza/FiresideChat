@@ -40,12 +40,18 @@ var ChatWidget = React.createClass({
         this.setState({chatRef: chatRef});
     },
     render: function () {
+        var mwindow = <a />
+        if (this.props.hasmwindow && this.props.ismoderator) {
+            mwindow = <ChatWindow firebase={this.props.fireaddr} userName={this.state.userName} ismoderator={this.props.ismoderator} ismwindow={true} hasmwindow={true} />
+        }
+
         if (this.state.userMode) {
              return (
                 <div className="container-fluid"> 
                     <Login callback={this.userCallback} />
                     <p>{this.state.numUsers} users are connected</p>
-                    <ChatWindow firebase={this.state.chatRef} userName={this.state.userName} ismoderator={this.props.ismoderator} />
+                    {mwindow}
+                    <ChatWindow firebase={this.props.fireaddr} userName={this.state.userName} ismoderator={this.props.ismoderator} ismwindow={false} hasmwindow={this.props.hasmwindow} />
                 </div>
             );
         } else {

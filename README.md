@@ -2,17 +2,17 @@
 
 ##A Firebase Javascript Chat Application with Moderation
 
-*(status: in progress, moderation not fully implemented)*
+*(status: in progress)*
 
 This package provides a simple, scalable Javascript chat application using the REACT framework and [Firebase](https://www.firebase.com/).
 
 It currently allows annoymous user login to read/write messages to a common location (chat room).  The most recent messages in the chat room are first loaded.
 
-Main TODO: Moderation mode that requires messages to be approved by a trusted moderator. 
-
 ## Quick Start Guide
 
 This package contains a 'dist' directory which contains the chat widget in index.html (see release zip file).  Before opening this page in a web browser, the index.html file should be modified.  The Firebase account address must be specified in place of YOURADDR (signup for Firebase is free).  The moderator mode can be toggled by setting data-moderatormode to "true" or "false".  To use the moderator mode, an email/password must be registered for the given Firebase account.
+
+This widget also allows one to enable a special moderator window so that all messages first go to that window and only show up on the main window if approved.  To enable this, set data-moderatorwindow to "true".  The moderator window should be "true" or "false" on both moderator and non-moderator windows.
 
 ## Installation and Usage
 
@@ -35,7 +35,7 @@ This chat application orders messages by timestamp.  If there are a lot of messa
 
 ## Moderation Mode
 
-To enable moderation mode, set "data-moderationmode" to "true".  Currently, moderation mode requires that a email/password has been setup on Firebase for the given reference location.  The moderator mode lets the user delete certain posts.  TBD: allow messages to pass to the moderator before being public.
+To enable moderation mode, set "data-moderationmode" to "true".  Currently, moderation mode requires that a email/password has been setup on Firebase for the given reference location.  The moderator mode lets the user delete certain posts.
 
 ## A Note on Authentication and Permissions
 
@@ -53,7 +53,7 @@ For now, authentication is anonymous or uses a Firebase email/password for the m
 
 ## TODO
 
-* Add a moderator mode to accept/reject posts.
+* Hide old messages. 
 * Allow component to take a Firebase token for login to allow server side control of user access and moderation.
-* Provide a panel to allow moderators to broadcast messages.
+* Provide a panel to allow moderators to broadcast messages and polls.
 * Export chat widget component for reuse in other REACT environments, allow for multiple chat windows.

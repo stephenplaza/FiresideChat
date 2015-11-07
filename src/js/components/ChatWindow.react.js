@@ -9,14 +9,31 @@ var ChatWindow = React.createClass({
     getInitialState: function () {
         return {
             messages: [],
-            loadedAll: false
+            loadedAll: false,
+            readfirebase: null,
+            modfirebase: null
         }
     },
     componentWillMount: function () {
+        var readfirebase = this.props.firebase + "/anonymous";
+        if (this.props.ismwindow) {
+            readfirebase = this.props.firebase + "/moderated";
+        }
+        
+        var modfirebase = this.props.firebase + "/moderated";
+        if (this.props.ismwindow || (!(this.props.hasmwindow)) || this.props.ismoderator) {
+            modfirebase = this.props.firebase + "/anonymous";
+        }
+
+        var readfirebaseconn = new Firebase(readfirebase);
+        var modfirebaseconn = new Firebase(modfirebase); 
+
+        this.setState({readfirebase: readfirebaseconn, modfirebase: modfirebaseconn}); 
+
         // get initial messages (only grab last few) -- watch for changes
         // check if child was removed
-        this.props.firebase.orderByChild("timestamp").limitToLast(InitialLimit).on("child_added", this.updateMsgs);
-        this.props.firebase.orderByChild("timestamp").limitToLast(InitialLimit).on("child_removed", this.delMsgs);
+        readfirebaseconn.orderByChild("timestamp").limitToLast(InitialLimit).on("child_added", this.updateMsgs);
+        readfirebaseconn.orderByChild("timestamp").limitToLast(InitialLimit).on("child_removed", this.delMsgs);
     },
     submitMsg: function () {
         // grab text and submit with username -- do not explicitly extend messages?
@@ -25,7 +42,7 @@ var ChatWindow = React.createClass({
         if (value === "") {
             return;
         }
-        this.props.firebase.push({
+        this.state.modfirebase.push({
             text: value,
             ismoderator: this.props.ismoderator,
             timestamp: Firebase.ServerValue.TIMESTAMP, 
@@ -57,11 +74,11 @@ var ChatWindow = React.createClass({
     },
     componentWillUnmount: function() {
         // global deref -- dangerous ?!
-        this.props.firebase.off()
+        this.state.readfirebase.off()
     },
     showMore: function () {
         // show in increments of PageLimit
-        var query = this.props.firebase.orderByChild("timestamp").endAt(this.state.messages[0].timestamp).limitToLast(PageLimit);
+        var query = this.state.readfirebase.orderByChild("timestamp").endAt(this.state.messages[0].timestamp).limitToLast(PageLimit);
 
         // query older data and prepend to the currently loaded data
         // only need to call once
@@ -90,17 +107,35 @@ var ChatWindow = React.createClass({
     },
     removeKey: function (delkey) {
         // get child and delete
-        this.props.firebase.child(delkey).remove();
+        if (this.props.ismwindow) {
+            this.state.readfirebase.child(delkey).remove();
+        } else {
+            this.state.modfirebase.child(delkey).remove();
+        }
+    },
+    acceptMsg: function (val) {
+        // accept message
+        this.state.modfirebase.push({
+            text: val.text,
+            ismoderator: val.ismoderator,
+            timestamp: val.timestamp, // reset timestamp ??
+            username: val.username 
+        }); 
+        this.state.readfirebase.child(val.key).remove();
     },
     render: function () {
         // render submission box with button
-        var msgbox = (
-                    <div className="form">
-                        <input type="text" maxLength="256" className="form-control" id="message" />
-    
-                        <button style={{marginTop: "1em"}} type="button" className="btn btn-primary" onClick={this.submitMsg}>Submit Message</button>
-                    </div>
-            );
+        var msgbox = <a />;
+
+        if (!this.props.ismwindow) {
+            var msgbox = (
+                        <div className="form">
+                            <input type="text" maxLength="256" className="form-control" id="message" />
+        
+                            <button style={{marginTop: "1em"}} type="button" className="btn btn-primary" onClick={this.submitMsg}>Submit Message</button>
+                        </div>
+                );
+        }
         // render text with messages (alternate colors)
         var messages = this.state.messages.slice().reverse();
         var count = 0;
@@ -113,7 +148,11 @@ var ChatWindow = React.createClass({
                             <center><a onClick={this.showMore}>Show More</a></center>
                     )
         }
-       
+        
+        var modstr = "";
+        if (this.props.ismwindow) {
+            modstr = "mod";
+        }
 
         return (
             <div>
@@ -128,11 +167,12 @@ var ChatWindow = React.createClass({
                         color = "White";
                     }
                     count += 1;
-                    var rowref = "crow"+count.toString();
+                    var rowref = "crow"+count.toString() + modstr;
 
                     // moderator mode allows messages to be deleted                   
                     var that = this;
                     var removeMessage = <td />;
+                    var acceptMessage = <td />;
                     var moderatorSym = <a />;
                         
                     if (val.ismoderator) {
@@ -140,13 +180,17 @@ var ChatWindow = React.createClass({
                     }
                     
                     if (this.props.ismoderator) {
-                        removeMessage = <td><button key={val.key} id={val.key} onClick={that.removeKey.bind(null, val.key)} className="btn btn-default" aria-label="Left Align"> <span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button></td>;
+                        removeMessage = <td><button key={val.key+modstr} id={val.key+modstr} onClick={that.removeKey.bind(null, val.key)} className="btn btn-default" aria-label="Left Align"> <span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button></td>;
                         
+                        if (this.props.ismwindow) {
+                            acceptMessage = <td><button key={val.key+modstr+"a"} id={val.key+modstr+"a"} onClick={that.acceptMsg.bind(null, val)} className="btn btn-default" aria-label="Left Align"> <span className="glyphicon glyphicon-ok" aria-hidden="true"></span></button></td>;
+                        }
                     }
 
                     return (
                         <tr key={rowref} style={{backgroundColor: color}}>
                             {removeMessage}
+                            {acceptMessage}
                             <td style={{width: "10em", padding: "1em"}}><b>{val.username}</b>{moderatorSym}:</td>
                             <td style={{padding: "1em"}}>{val.text}</td>
                             <td style={{width: "10em", align: "right", padding: "1em"}}><font style={{align: "right"}}><i>{timestr}</i></font></td>
