@@ -27,6 +27,7 @@ var ChatWindow = React.createClass({
         }
         this.props.firebase.push({
             text: value,
+            ismoderator: this.props.ismoderator,
             timestamp: Firebase.ServerValue.TIMESTAMP, 
             username: this.props.userName
         }); 
@@ -131,15 +132,22 @@ var ChatWindow = React.createClass({
 
                     // moderator mode allows messages to be deleted                   
                     var that = this;
+                    var removeMessage = <td />;
+                    var moderatorSym = <a />;
+                        
+                    if (val.ismoderator) {
+                        moderatorSym = <span className="glyphicon glyphicon-star" aria-hidden="true"></span>;
+                    }
+                    
                     if (this.props.ismoderator) {
-                        var removeMessage = <td />;
                         removeMessage = <td><button key={val.key} id={val.key} onClick={that.removeKey.bind(null, val.key)} className="btn btn-default" aria-label="Left Align"> <span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button></td>;
+                        
                     }
 
                     return (
                         <tr key={rowref} style={{backgroundColor: color}}>
                             {removeMessage}
-                            <td style={{width: "10em", padding: "1em"}}><b>{val.username}</b>:</td>
+                            <td style={{width: "10em", padding: "1em"}}><b>{val.username}</b>{moderatorSym}:</td>
                             <td style={{padding: "1em"}}>{val.text}</td>
                             <td style={{width: "10em", align: "right", padding: "1em"}}><font style={{align: "right"}}><i>{timestr}</i></font></td>
                         </tr>

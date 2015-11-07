@@ -52,7 +52,7 @@ var Login = React.createClass({
             if (this.props.ismoderator) {
                 return (
                     <div className="form">
-                        Name <input type="text" className="form-control" id="username" />
+                        Name <input type="text" maxLength="14" className="form-control" id="username" />
                         Username <input type="text" className="form-control" id="email" />
                         Password <input type="password" className="form-control" id="password" />
                         <button style={{marginTop: "1em"}} type="button" className="btn btn-primary" onClick={this.anonymousLogin}>Join Chat</button>
@@ -61,7 +61,7 @@ var Login = React.createClass({
             } else {
                 return (
                         <div className="form">
-                        Name <input type="text" className="form-control" id="username" />
+                        Name <input type="text" maxLength="14" className="form-control" id="username" />
                         <button style={{marginTop: "1em"}} type="button" className="btn btn-primary" onClick={this.anonymousLogin}>Join Chat</button>
                         </div>
                 );
