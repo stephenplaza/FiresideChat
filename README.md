@@ -39,7 +39,7 @@ To enable moderation mode, set "data-moderationmode" to "true".  Currently, mode
 
 ## A Note on Authentication and Permissions
 
-This package currently assumes anonymous read/writes are possible at the given database location provided to the package.  It is assumed that the moderator is the only one with priveleges to delete entries.  While not necessary for this application to work, this behavior can be enforced by setting rules in one's Firebase account.  For instance, the following rule prevents the deletion of an existing item unless the authenticated user has the uid of SOMEUID:
+This package currently assumes anonymous read/writes are possible at the given database location provided to the package.  read/write should be set true for the database location.  The program also requires write permission at the location 'activeusers'.  It is assumed that the moderator is the only one with priveleges to delete entries.  While not necessary for this application to work, this behavior can be enforced by setting rules in one's Firebase account.  For instance, the following rule prevents the deletion of an existing item unless the authenticated user has the uid of SOMEUID:
 
     ".write": "(!data.exists() && newData.exists()) || (auth.uid == 'SOMEUID')"
 

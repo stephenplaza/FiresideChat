@@ -12,11 +12,28 @@ var ChatWidget = React.createClass({
         return {
             userMode: false,
             userName: "default",
-            chatRef: null
+            chatRef: null,
+            numUsers: 0
         };
     },
     userCallback: function (username) {
         this.setState({userMode: true, userName: username});
+        var addr = this.props.fireaddr;
+        var baseaddr = addr.slice(0, addr.indexOf('.com')+4)
+        var listRef = new Firebase(baseaddr + "/activeusers");
+        var userRef = listRef.push();
+
+        var presenceRef = new Firebase(baseaddr + "/.info/connected");
+        presenceRef.on("value", function(snap) {
+            if (snap.val()) {
+                userRef.set(true);
+                userRef.onDisconnect().remove();
+            }
+        });
+
+        listRef.on("value", function(snap) {
+            this.setState({numUsers: snap.numChildren()});
+        }.bind(this));
     },
     componentWillMount: function () {
         var chatRef = new Firebase(this.props.fireaddr);
@@ -27,6 +44,7 @@ var ChatWidget = React.createClass({
              return (
                 <div className="container-fluid"> 
                     <Login callback={this.userCallback} />
+                    <p>{this.state.numUsers} users are connected</p>
                     <ChatWindow firebase={this.state.chatRef} userName={this.state.userName} ismoderator={this.props.ismoderator} />
                 </div>
             );
