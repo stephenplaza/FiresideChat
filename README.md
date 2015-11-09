@@ -2,8 +2,6 @@
 
 ##A Firebase Javascript Chat Application with Moderation
 
-*(status: in progress)*
-
 This package provides a simple, scalable Javascript chat application using the REACT framework and [Firebase](https://www.firebase.com/).
 
 It currently allows annoymous user login to read/write messages to a common location (chat room).  The most recent messages in the chat room are first loaded.
