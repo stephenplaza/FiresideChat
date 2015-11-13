@@ -27,7 +27,13 @@ function loadInterface() {
         hasmwindow = true;
     }
 
-    React.render(<Master fireaddr={fireaddr} ismoderator={ismoderator} hasmwindow={hasmwindow} />, element);
+    var readonly = element.getAttribute("data-readonly");
+    var isreadonly = false;
+    if (readonly == "true") {
+        isreadonly = true;
+    }
+
+    React.render(<Master fireaddr={fireaddr} ismoderator={ismoderator} hasmwindow={hasmwindow} readOnly={isreadonly} />, element);
 }
 
 // do not render component until

@@ -127,7 +127,7 @@ var ChatWindow = React.createClass({
         // render submission box with button
         var msgbox = <a />;
 
-        if (!this.props.ismwindow) {
+        if (!this.props.ismwindow && !this.props.readOnly) {
             var msgbox = (
                         <div className="form">
                             <input type="text" maxLength="256" className="form-control" id="message" />
