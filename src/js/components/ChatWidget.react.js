@@ -71,7 +71,7 @@ var ChatWidget = React.createClass({
                         <Login callback={this.userCallback} />
                         <p>{this.state.numUsers} users are connected</p>
                         {mwindow}
-                        <ChatWindow firebase={this.props.fireaddr} userName={this.state.userName} ismoderator={this.props.ismoderator} ismwindow={false} hasmwindow={this.props.hasmwindow} readOnly={true}  />
+                        <ChatWindow firebase={this.props.fireaddr} userName={this.state.userName} ismoderator={this.props.ismoderator} ismwindow={false} hasmwindow={this.props.hasmwindow} readOnly={false}  />
                         </div>
                        );
             } else {
